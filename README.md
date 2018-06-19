@@ -104,6 +104,235 @@ extension Position {
 - indirect
 
 ## - Enumeration 활용
+EX 1.
 
+```
+enum Chicken {
+	case fried
+	case soySourced
+	case spiceSourced
+	case firedWithoutBone
+	case soySourcedWithoutBone
+	case spiceSourcedWithoutBone
+}
 
+enum Source {
+	case soy
+	case spice
+}
 
+enum ChickenShort {
+	case fried(bone: Bool)
+	case sourced(source: Source, bone: Bool)
+}
+// 실행
+ChickenShort.sourced(source: Source.spice, bone: false)
+```
+
+EX 2.
+
+```
+enum API {
+	case getList
+	case getDetail(id: Int)
+}
+
+extension API {
+	var host: String {
+		return "https://apiserver.com"
+	}
+	var path: String {
+		switch self {
+			case .getList:
+				return "/List"
+			case let .getDetail(id):
+				return "/list/\(id)/detail"
+		}
+	}
+	var url: URL? {
+		return URL(string: "\(self.host)\(self.path)"
+	}
+}
+// 실행
+API.getDetail(id:10).url
+
+// 결과
+https://apiserver.com/list/10/detail
+```
+
+EX 3.
+
+```
+indirect enum BinaryTree {
+	case leaf
+	case node(left: BinaryTree, right: BinaryTree, data: Int)
+}
+
+let tree: BinaryTree = .node(
+	left: .node(left: .node(left: .leaf, right: .leaf, data: 1),
+				  right: .node(left: .leaf, right: .leaf, data: 3),
+				  data: 2),
+	right: .node(left: .node(left: .leaf, right: .leaf, data: 5),
+				   right: .node(left: .leaf, right: .leaf, data: 7),
+				   data: 6),
+	data: 4)
+```
+
+EX 4.
+
+```
+extension BinaryTree {
+	func hasData(_ data: Int) -> Bool {
+		switch self {
+			case .leaf:
+				return false
+			case let .node(_,_,nodeData) where data == nodeData:
+				return true
+			case let .node(left,_,nodeData) where data < nodeData:
+				return left.hasData(data)
+			case let .node(_,right,nodeData) where data > nodeData:
+				return rigth.hasData(data)
+			case .node:
+				return false
+		}
+	}
+}
+
+// 실행
+tree.hasData(6)
+tree.hasData(10)
+
+// 결과
+true
+false
+```
+
+## Generic
+
+- 자바의 Generic과 유사
+- struct, enum, class등에서 사용가능
+- type constraint
+
+```
+indirect enum BinaryTree<T: Comparable & Equatable> {
+	case leaf
+	case node(left: BinaryTree<T>, right: BinaryTree<T>, data: T)
+}
+
+extension BinaryTree {
+	func hasData(_ data: T) -> Bool {
+		switch self {
+			case .leaf:
+				return false
+			case let .node(_,_,nodeData) where data == nodeData:
+				return true
+			case let .node(left,_,nodeData) where data < nodeData:
+				return letf.hasData(data)
+			case let .node(_,right,nodeData) where data > nodeData:
+				return right.haseData(data)
+			case .node:
+				return false
+		}
+	}
+}
+
+let tree: BinaryTree<Int> = .node(
+	left: .node(left: .node(left: .leaf, right: .leaf, data: 1),
+				  right: .node(left: .leaf, right: .leaf, data: 3),
+				  data: 2),
+	right: .node(left: .node(left: .leaf, right: .leaf, data: 5),
+					right: .node(left: .leaf, right: .leaf, data: 7),
+					data: 6),
+	data: 4)
+
+let stringTree: BinaryTree<String> = .node(left: .leaf, right: .leaf, data: "1")
+
+// 실행
+tree.hasData(6)
+tree.hasData(19)
+
+stringTree.hasData("1")
+stringTree.hasData("3")
+
+// 결과
+
+true
+false
+
+true
+false
+```
+
+## Protocol
+
+- 자바의 interface와 유사
+- extension을 통해 기능 구현 가능
+- 하지만 자바의 Abstract와는 다름
+- extension을 통해 struct, enum, class, primitive type에서 구현가능
+
+## Associated Type
+
+- Protocol의 Generic
+- 사용법 
+
+(1) 추론, (2) typealias, (3) 직접선언
+
+## - Associated Type 활용
+```
+protocol BinaryTreeProtocol {
+	associatedtype T: Equatable, Comparable
+	func hasData(_ data: T) -> Bool
+}
+
+// Typealias 방법
+
+class BinaryTree: BinaryTreeProtocol {
+	typealias T = Int
+	static let leaf: BinaryTree = BinaryTree(left: nil, right: nil, data: nil)
+	var left: BinaryTree?
+	var right: BinaryTree?
+	var data: T?
+	
+	init(left: BinaryTree? = BinaryTree.leaf,
+		 right: BinaryTree? = BinaryTree.leaf,
+		 data: T?) {
+		 self.left = left
+		 self.right = right
+		 self.data = data
+	}
+	
+	func hasData(_ data: T) -> Bool {
+		return true
+	}
+}
+
+// 추론 방법
+
+class BinaryTree: BinaryTreeProtocol {
+	static let leaf: BinaryTree = BinaryTree(left: nil, right: nil, data: nil)
+	var left: BinaryTree?
+	var right: BinaryTree?
+	var data: Int?
+	init(left: BinaryTree? = BinaryTree.leaf,
+		  right: BinaryTree? = BinaryTree.leaf.
+		  data: Int?) {
+		  self.left = left
+		  self.right = right
+		  self.data = data	  
+	}
+	func hasData(_ data: Int) -> Bool {
+		return true
+	}
+}
+
+// 직접 선언 방법
+
+class BinaryTree: BinaryTreeProtocol {
+	struct T: Equatable, Comparable {
+		var data: Int
+		static func ==(lhs: T, rhs: T) -> Bool {return lhs.data == rhs.data}
+		
+	}
+}
+
+```

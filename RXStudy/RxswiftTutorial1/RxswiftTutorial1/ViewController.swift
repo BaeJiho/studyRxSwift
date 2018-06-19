@@ -10,6 +10,86 @@ import UIKit
 import RxSwift
 import RxCocoa
 
+protocol Times {
+  func times(_ times: Int) -> Times
+}
+
+protocol Shakeable: class {
+  
+}
+extension Shakeable where Self: UIView {
+  func shake() {
+    let animation = CABasicAnimation(keyPath: "position")
+    animation.duration = 0.05
+    animation.repeatCount = 5
+    animation.autoreverses = true
+    animation.fromValue = NSValue(cgPoint: CGPoint(x: self.center.x - 4.0, y: self.center.y))
+    animation.toValue = NSValue(cgPoint: CGPoint(x: self.center.x + 4.0, y: self.center.y))
+    layer.add(animation, forKey: "position")
+  }
+}
+
+class ShakeableButton: UIButton, Shakeable {
+  
+}
+
+protocol Dimmable: class {
+  
+}
+
+extension Dimmable where Self: UIView {
+  func dim() {
+    self.alpha = 0.5
+  }
+}
+
+extension UIButton: Dimmable {
+  
+}
+protocol A {
+  func a()
+}
+
+extension A {
+  func a() {
+    print("protocol A a()")
+    b()
+  }
+  func b() {
+    print("protocol A b()")
+  }
+}
+
+class B: A {
+  func b() {
+    print("class B b()")
+  }
+  func main() {
+    a()
+    b()
+  }
+}
+
+extension Int: Times {
+  func times(_ times: Int) -> Times {
+    return self * times
+  }
+}
+
+extension String: Times {
+  func times(_ times: Int) -> Times {
+    return Array(0..<times)
+      .map {_ in return self}
+      .reduce("", +)
+  }
+}
+
+extension Times {
+  func printSomeThing() {
+    print("self value is: \(self)")
+  }
+}
+
 enum API {
   case getList
   case getDetail(id: Int)
@@ -64,17 +144,28 @@ class ViewController: UIViewController {
     
     let stringTree: BineryTree<String> = .node(left: .leaf, right: .leaf, data: "1")
     
+    let timesArray: [Times] = [27,1,2,3,"www,","Was it a cat i saw"]
+    
+    timesArray.forEach { (item: Times) in
+      print(item.times(3))
+    }
+    
+    
     print(tree.hasData(6))
     print(stringTree.hasData("1"))
     print(API.getDetail(id: 32).url)
     print(API.getList.url)
-    print(3.double)
-    print(3.times(5))
+    print("Why so Serious?".times(3))
+    print(3.times(3))
+    print(3.printSomeThing())
+    
+    
+    B().main()
     tableView.dataSource = self
     searchBar
       .rx.text // RxCocoa의 Observable 속성
       .orEmpty // 옵셔널이 아니도록 만드는것
-      .debounce(0.5, scheduler: MainScheduler.instance) // 0.5초 기다립니다.
+      .debounce(0.3, scheduler: MainScheduler.instance) // 0.3초 이후의 이벤트만 아래가 실행 될 수 있게합니다.
       .distinctUntilChanged() // 새로운 값이 이전의 값과 같은지 확인합니다.
       .filter {!$0.isEmpty} // 새로운 값이 정말 새롭다면, 비어있지 않은 쿼리를 위해 필터링합니다.
       .subscribe(onNext: { [unowned self] query in // 이 부분 덕분에 모든 새로운 값에 대한 알림을 받을 수 있습니다.
@@ -101,14 +192,14 @@ extension BineryTree {
   }
 }
 
-extension Int {
-  var double: Int {
-    return self * 2
-  }
-  func times(_ time: Int) -> Int {
-    return self * time
-  }
-}
+//extension Int {
+//  var double: Int {
+//    return self * 2
+//  }
+//  func times(_ time: Int) -> Int {
+//    return self * time
+//  }
+//}
 
 extension ViewController: UITableViewDataSource {
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
