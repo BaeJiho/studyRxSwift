@@ -37,8 +37,9 @@ struct Position {
   var y: Float
 }
 
-extension Position {
-  
+indirect enum BineryTree<T: Comparable & Equatable> {
+  case leaf
+  case node(left: BineryTree<T>, right: BineryTree<T>, data: T)
 }
 
 class ViewController: UIViewController {
@@ -46,14 +47,25 @@ class ViewController: UIViewController {
   @IBOutlet weak var searchBar: UISearchBar!
   @IBOutlet weak var tableView: UITableView!
   
-  
-  
   var shownCities: [String] = []
   let allCities: [String] = ["New York", "London", "Oslo", "Warsaw", "Berlin", "Praga"]
   let disposeBag = DisposeBag() // 뷰가 할당 해제될 때 놓아줄 수 있는 일회용품의 가방
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    let tree: BineryTree<Int> = .node(
+    left: .node(left: .node(left: .leaf, right: .leaf, data: 1),
+                right: .node(left: .leaf, right: .leaf, data: 3),
+                data: 2),
+    right: .node(left: .node(left: .leaf, right: .leaf, data: 5),
+                 right: .node(left: .leaf, right: .leaf, data: 6),
+                data: 6),
+    data: 4)
+    
+    let stringTree: BineryTree<String> = .node(left: .leaf, right: .leaf, data: "1")
+    
+    print(tree.hasData(6))
+    print(stringTree.hasData("1"))
     print(API.getDetail(id: 32).url)
     print(API.getList.url)
     print(3.double)
@@ -72,7 +84,22 @@ class ViewController: UIViewController {
       .addDisposableTo(disposeBag)
   }
 }
-
+extension BineryTree {
+  func hasData(_ data: T) -> Bool {
+    switch self {
+    case .leaf:
+      return false
+    case let .node(_,_,nodeData) where data == nodeData:
+      return true
+    case let .node(left,_,nodeData) where data < nodeData:
+      return left.hasData(data)
+    case let .node(_,right,nodeData) where data > nodeData:
+      return right.hasData(data)
+    case .node:
+      return false
+    }
+  }
+}
 
 extension Int {
   var double: Int {
@@ -93,3 +120,4 @@ extension ViewController: UITableViewDataSource {
     return cell
   }
 }
+
