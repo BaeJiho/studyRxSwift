@@ -17,6 +17,11 @@ protocol Times {
 protocol Shakeable: class {
   
 }
+
+protocol BinaryTreeProtocol {
+  associatedtype T: Equatable, Comparable
+  
+}
 extension Shakeable where Self: UIView {
   func shake() {
     let animation = CABasicAnimation(keyPath: "position")
