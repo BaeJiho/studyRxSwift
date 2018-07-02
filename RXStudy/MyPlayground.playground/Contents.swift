@@ -126,19 +126,19 @@ import Foundation
 //
 //
 //
-let string = "ab2v9bc13j5jf4jv21"
-let numberArray = (try? NSRegularExpression(pattern: "[0-9]+")
-  .matches(in: string, range: NSRange(string.startIndex..., in: string))
-  .flatMap { Range($0.range, in: string) }//
-  .map { String(string[$0]) }) ?? [""]
-let r = numberArray// 홀수 구분 없이 패턴에 맞는 문자열 배열들의 모음 문자열 == String, 이 문자열들의 배열
-  .flatMap{ (number: String) -> Int? in
-    return Int(number)// 정수형이 되면서
-  }.filter { (value: Int) -> Bool in
-    return value % 2 != 0// 짝수인 애들의
-  }.map { $0 * $0 }// 자승을 리턴하는데
-  .reduce(0, +)// 0 부터 시작하는데 같이 들어간 오퍼레이터를 적용한 반복문
-print(r)
+//let string = "ab2v9bc13j5jf4jv21"
+//let numberArray = (try? NSRegularExpression(pattern: "[0-9]+")
+//  .matches(in: string, range: NSRange(string.startIndex..., in: string))
+//  .flatMap { Range($0.range, in: string) }//
+//  .map { String(string[$0]) }) ?? [""]
+//let r = numberArray// 홀수 구분 없이 패턴에 맞는 문자열 배열들의 모음 문자열 == String, 이 문자열들의 배열
+//  .flatMap{ (number: String) -> Int? in
+//    return Int(number)// 정수형이 되면서
+//  }.filter { (value: Int) -> Bool in
+//    return value % 2 != 0// 짝수인 애들의
+//  }.map { $0 * $0 }// 자승을 리턴하는데
+//  .reduce(0, +)// 0 부터 시작하는데 같이 들어간 오퍼레이터를 적용한 반복문
+//print(r)
 
 //
 //let numbers: [Int] = [0,1,2,3,4]
@@ -165,3 +165,134 @@ print(r)
 //filtered = numbers.filter({ (items: Int) -> Bool in
 //  return items % 2 == 0
 //})
+
+//MARK: - Boxing
+//public struct Some<Base> {
+//  let base: Base
+//  init(_ base: Base) {
+//    self.base = base
+//  }
+//}
+//protocol BoxCompatible {
+//  associatedtype CompatibleType
+//  var box: Some<CompatibleType> { get set}
+//  static var box: Some<CompatibleType>.Type { get set }
+//}
+//
+//extension BoxCompatible {
+//  var box: Some<Self> {
+//    get { return Some(self) }
+//    set { }
+//  }
+//  static var box: Some<Self>.Type {
+//    get { return Some<Self>.self }
+//    set { }
+//  }
+//}
+//
+//class A {}
+//extension A: BoxCompatible {}
+//
+//class B {}
+//extension B: BoxCompatible {}
+//
+//extension Some where Base: A {
+//  var description: String {
+//    return "A.box.description"
+//  }
+//
+//  static var className: String {
+//    return "A"
+//  }
+//}
+//
+//extension Some where Base: B {
+//  var someBoxingValue: Int {
+//    return 10
+//  }
+//  static var classValue: Int {
+//    return 20
+//  }
+//}
+//
+//let a = A()
+//a.box.description
+//A.box.className
+//
+//let b = B()
+//b.box.someBoxingValue
+//B.box.classValue
+//
+//class Test: BoxCompatible {
+//  var value: Int
+//
+//  init(value: Int) {
+//    self.value = value
+//  }
+//}
+//
+//extension Some where Base == Test {
+//  var result: Int {
+//    return base.value
+//  }
+//  func add(value: Int) {
+//    base.value += value
+//  }
+//}
+//
+//let test = Test(value: 10)
+//print(test.box.result)
+//test.box.add(value: 10)
+//print(test.box.result)
+
+//Boxing
+// 확장의 방법
+// - 상속: 기능을 덧붙이는건 아님.
+//        상위 클래스를 사용하고 있는 다른 모든것에 영향을 끼칠 수 가 없음
+// - Extension: 기능을 덧붙임
+// - Boxing: 기존의 기능, 프로퍼ㅓ티와 내가 확장하고자 하는것을 분리하는 확장
+// RxSwift에서 매우 많이 사용한다.
+
+public struct Some<Base> {
+  let base: Base
+  init(_ base: Base) {
+    self.base = base
+  }
+}
+
+protocol BoxCompatible {
+  associatedtype Compatible
+  var box: Some<Compatible> { get set }
+  static var box: Some<Compatible>.Type { get set }
+}
+
+extension BoxCompatible {
+  var box: Some<Self> {
+    get { return Some(self) }
+    set { }
+  }
+  static var box: Some<Self>.Type {
+    get { return Some<Self>.self }
+    set { }
+  }
+}
+
+class Box: BoxCompatible {}
+
+extension Some where Base == Box {
+  var desciption: String {
+    return "이렇게?ㅜㅜ"
+  }
+}
+
+let a = Box()
+
+a.box.desciption
+
+
+
+
+
+
+
+
