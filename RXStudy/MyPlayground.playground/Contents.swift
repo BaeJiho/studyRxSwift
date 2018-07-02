@@ -252,42 +252,95 @@ import Foundation
 // - Extension: 기능을 덧붙임
 // - Boxing: 기존의 기능, 프로퍼ㅓ티와 내가 확장하고자 하는것을 분리하는 확장
 // RxSwift에서 매우 많이 사용한다.
+//
+//public struct Some<Base> {
+//  let base: Base
+//  init(_ base: Base) {
+//    self.base = base
+//  }
+//}
+//
+//protocol BoxCompatible {
+//  associatedtype Compatible
+//  var box: Some<Compatible> { get set }
+//  static var box: Some<Compatible>.Type { get set }
+//}
+//
+//extension BoxCompatible {
+//  var box: Some<Self> {
+//    get { return Some(self) }
+//    set { }
+//  }
+//  static var box: Some<Self>.Type {
+//    get { return Some<Self>.self }
+//    set { }
+//  }
+//}
+//
+//class Box: BoxCompatible {}
+//
+//extension Some where Base == Box {
+//  var desciption: String {
+//    return "이렇게?ㅜㅜ"
+//  }
+//}
+//
+//let a = Box()
+//
+//a.box.desciption
 
-public struct Some<Base> {
-  let base: Base
-  init(_ base: Base) {
-    self.base = base
-  }
+// 반응형 프로그래밍
+// Observable
+//
+// Reaction - Action
+// - Reaction을 하기 위해서는 Action을 관찰해야한다.
+//
+// Observer
+// - 관찰하는 주체
+//
+// Observable
+// - 관찰되는 대상
+//
+// Subscribe, Emit, Dispose
+//
+// Subscribe: 구독
+// - Observer는 Observable을 구독한다.
+//
+// Emit: 발행
+// - Observable은 Event를 발생한다.
+//
+// Dispose: 처분
+// -Observable은 Event발행이 Complete(완료)되면, Dispose 된다.
+
+// Event
+// Observable은 Event를 Emit 한다.
+// Observer는 Observable로 부터 Event를 Subscribe 한다.
+
+public enum Event<Element> {
+  case next(Element)
+  case error(Error)
+  case completed
 }
 
-protocol BoxCompatible {
-  associatedtype Compatible
-  var box: Some<Compatible> { get set }
-  static var box: Some<Compatible>.Type { get set }
+// Observer는 어떻게 관찰을 할까
+
+protocol ObserverType {
+  associatedtype E
+  func on(_ event: Event<E>)
 }
 
-extension BoxCompatible {
-  var box: Some<Self> {
-    get { return Some(self) }
-    set { }
-  }
-  static var box: Some<Self>.Type {
-    get { return Some<Self>.self }
-    set { }
-  }
-}
 
-class Box: BoxCompatible {}
 
-extension Some where Base == Box {
-  var desciption: String {
-    return "이렇게?ㅜㅜ"
-  }
-}
 
-let a = Box()
 
-a.box.desciption
+
+
+
+
+
+
+
+
 
 
 
