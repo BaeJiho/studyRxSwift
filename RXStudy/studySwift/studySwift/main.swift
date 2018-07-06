@@ -339,74 +339,75 @@ let subscribe: (Event<Int>) -> Void = {(event: Event) in
 
 //Observable 생성 - from
 //Element를 Array로 보내고 하나씩 Emit한다.
-Observable.from([1,2,3,4,5])
+let to = Observable.from([1,2,3,4,5])
   .subscribe(subscribe)
   .disposed(by: disposseBag)
 
-//Observable 생성 - of
-//Emit할 Element 들을 함수 인자로 기입
-Observable.of(1,2,3,4,5)
-  .subscribe(subscribe)
-  .disposed(by: disposseBag)
-
-//Observable 생성 - empty
-//아무 Element를 보내지 않음. complete는 보냄
-Observable<Int>
-  .empty()
-  .subscribe(subscribe)
-  .disposed(by: disposseBag)
-
-//Observable 생성 - never
-//아무 Event를 보내지 않음
-Observable
-  .never()
-  .subscribe(subscribe)
-  .disposed(by: disposseBag)
-
-//Observable 생성 - error
-//Error Event를 1개 Emit 한다.
-Observable<Int>
-  .error(RxError.unknown)
-  .subscribe(subscribe)
-  .disposed(by: disposseBag)
-
-//Observable 생성 - create
-//Observer에 직접 Event를 Emit한다.
-Observable<Int>
-  .create { (anyObserver: AnyObserver<Int>) -> Disposable in
-    anyObserver.on(Event.next(1))
-    anyObserver.on(Event.next(2))
-    anyObserver.on(Event.next(3))
-    anyObserver.on(Event.next(4))
-    anyObserver.on(Event.next(5))
-    anyObserver.on(Event.completed)
-    return Disposables.create {
-      print("dispose")
-    }
-  }
-  .subscribe(subscribe)
-  .disposed(by: disposseBag)
-
-//Observable 생성 -repeatElement
-//지정된 element를 계속 Emit 한다.
-Observable<Int>
-  .repeatElement(3)
-  .take(10)
-  .subscribe(subscribe)
-  .disposed(by: disposseBag)
-
-//Observable 생성 - interval
-//지정된 시간에 한번씩 Event를 Emit
-Observable<Int>
-  .interval(0.5, scheduler: MainScheduler.instance)
-  .take(20).subscribe(subscribe)
-  .disposed(by: disposseBag)
-
-
-
-
-
-
-
-
-
+print(to)
+////Observable 생성 - of
+////Emit할 Element 들을 함수 인자로 기입
+//Observable.of(1,2,3,4,5)
+//  .subscribe(subscribe)
+//  .disposed(by: disposseBag)
+//
+////Observable 생성 - empty
+////아무 Element를 보내지 않음. complete는 보냄
+//Observable<Int>
+//  .empty()
+//  .subscribe(subscribe)
+//  .disposed(by: disposseBag)
+//
+////Observable 생성 - never
+////아무 Event를 보내지 않음
+//Observable
+//  .never()
+//  .subscribe(subscribe)
+//  .disposed(by: disposseBag)
+//
+////Observable 생성 - error
+////Error Event를 1개 Emit 한다.
+//Observable<Int>
+//  .error(RxError.unknown)
+//  .subscribe(subscribe)
+//  .disposed(by: disposseBag)
+//
+////Observable 생성 - create
+////Observer에 직접 Event를 Emit한다.
+//Observable<Int>
+//  .create { (anyObserver: AnyObserver<Int>) -> Disposable in
+//    anyObserver.on(Event.next(1))
+//    anyObserver.on(Event.next(2))
+//    anyObserver.on(Event.next(3))
+//    anyObserver.on(Event.next(4))
+//    anyObserver.on(Event.next(5))
+//    anyObserver.on(Event.completed)
+//    return Disposables.create {
+//      print("dispose")
+//    }
+//  }
+//  .subscribe(subscribe)
+//  .disposed(by: disposseBag)
+//
+////Observable 생성 -repeatElement
+////지정된 element를 계속 Emit 한다.
+//Observable<Int>
+//  .repeatElement(3)
+//  .take(10)
+//  .subscribe(subscribe)
+//  .disposed(by: disposseBag)
+//
+////Observable 생성 - interval
+////지정된 시간에 한번씩 Event를 Emit
+//Observable<Int>
+//  .interval(0.5, scheduler: MainScheduler.instance)
+//  .take(20).subscribe(subscribe)
+//  .disposed(by: disposseBag)
+//
+//
+//
+//
+//
+//
+//
+//
+//
