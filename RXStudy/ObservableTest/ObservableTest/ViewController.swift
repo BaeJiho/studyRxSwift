@@ -41,33 +41,91 @@ class ViewController: UIViewController {
     var behaviorSubject = BehaviorSubject(value: "initial Value")
     behaviorSubject.subscribe(subscrib)
     behaviorSubject.onNext("first Value")
+    behaviorSubject.onCompleted()
     
-//    stringSequence.subscribe { (event: Event) in
-//      switch event {
-//      case let .next(element):
-//        print("\(element)")
-//      case let .error(error):
-//        print("\(error.localizedDescription)")
-//      case .completed:
-//        print("completed")
-//      }
-//    }.disposed(by: disposeBag)
     
-    Observable<Int>.create { (observer) -> Disposable in
-      //observable이 이벤트로 방출할 Emit을 생성
-      observer.on(Event.next(1))
-      observer.on(Event.next(2))
-      observer.on(Event.next(3))
-      observer.onCompleted()
-      return Disposables.create()
+    //    stringSequence.subscribe { (event: Event) in
+    //      switch event {
+    //      case let .next(element):
+    //        print("\(element)")
+    //      case let .error(error):
+    //        print("\(error.localizedDescription)")
+    //      case .completed:
+    //        print("completed")
+    //      }
+    //    }.disposed(by: disposeBag)
+    
+    //    Observable<Int>.create { (observer) -> Disposable in
+    //      //observable이 이벤트로 방출할 Emit을 생성
+    //      observer.on(Event.next(1))
+    //      observer.on(Event.next(2))
+    //      observer.on(Event.next(3))
+    //      observer.onCompleted()
+    //      return Disposables.create()
+    //    }
+    //    //      .subscribe(subscrib).disposed(by: disposeBag)
+    var replaySubject = ReplaySubject<String>.create(bufferSize: 1)
+    replaySubject.onNext("이벤트 첫번째")
+    replaySubject.onNext("이벤트 두번째")
+    replaySubject.subscribe(subscrib)
+    replaySubject.onNext("first event")
+    replaySubject.onCompleted()
+    
+    func myJust<E>(element: E) -> Observable<E> {
+      return Observable.create { observer -> Disposable in
+        observer.on(.next(element))
+        observer.on(.completed)
+        return Disposables.create()
+      }
     }
-    //      .subscribe(subscrib).disposed(by: disposeBag)
+    myJust(element: 10).subscribe(onNext: { n in
+      print(n)
+    })
     
-  }
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
+    var count = 1
+    
+    let deferredSequence = Observable<String>.deferred {
+      print("\(count)번째")
+      count += 1
+      
+      return Observable.create({ (observer) -> Disposable in
+        print("Emitting...")
+        observer.onNext("여기")
+        return Disposables.create()
+      })
+    }
+    deferredSequence.subscribe(onNext: {print($0)}).disposed(by: disposeBag)
+    deferredSequence.subscribe(onNext: {print($0)}).disposed(by: disposeBag)
+    
+    let arrayType = ["첫번째","두번째","세번째","네번째","다섯번째","여섯번째"]
+    
+    Observable
+      .from(arrayType)
+      .subscribe(onNext: {print($0)})
+      .disposed(by: disposeBag)
+    
+    Observable
+      .just(1)
+      .subscribe(onNext:{print($0)})
+      .disposed(by: disposeBag)
+    
+    Observable
+      .range(start: 1, count: 3)
+      .subscribe(onNext:{print($0)})
+      .disposed(by: disposeBag)
+    
+    Observable
+      .generate(initialState: 0, condition: {$0 < 3}, iterate: {$0 + 1})
+      .subscribe(onNext:{print($0)})
+      .disposed(by: disposeBag)
+    
+//    Observable
+//      .repeatElement("toto")
+//      .subscribe(onNext: {print($0)})
+//      .disposed(by: disposeBag)
+    
+    
+    
   }
 }
 
