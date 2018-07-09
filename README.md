@@ -564,5 +564,26 @@ print 부분
 doOn은 Observer가 구독하기 전에 핸들링 할 수 있습니다.
 
 ```
-
+Observable
+      .of("1","2","3","4","5","6")
+      .do(onNext: { print("Intercepted:",$0)},
+          onError: { print("error:",$0)},
+          onCompleted: { print("Completed")})
+      .subscribe(onNext: {print($0)})
+      .disposed(by: disposeBag)
+      
+---------------
+- Intercepted: 1
+- 1
+- Intercepted: 2
+- 2
+- Intercepted: 3
+- 3
+- Intercepted: 4
+- 4
+- Intercepted: 5
+- 5
+- Intercepted: 6
+- 6
+- Completed
 ```

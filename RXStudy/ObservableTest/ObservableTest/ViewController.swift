@@ -64,6 +64,7 @@ class ViewController: UIViewController {
     //      return Disposables.create()
     //    }
     //    //      .subscribe(subscrib).disposed(by: disposeBag)
+    
     var replaySubject = ReplaySubject<String>.create(bufferSize: 1)
     replaySubject.onNext("이벤트 첫번째")
     replaySubject.onNext("이벤트 두번째")
@@ -124,7 +125,13 @@ class ViewController: UIViewController {
 //      .subscribe(onNext: {print($0)})
 //      .disposed(by: disposeBag)
     
-    
+    Observable
+      .of("1","2","3","4","5","6")
+      .do(onNext: { print("Intercepted:",$0)},
+          onError: { print("error:",$0)},
+          onCompleted: { print("Completed")})
+      .subscribe(onNext: {print($0)})
+      .disposed(by: disposeBag)
     
   }
 }
